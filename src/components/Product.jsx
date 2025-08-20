@@ -7,7 +7,7 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
 
-export default function BasicCard(props) {
+export default function Product(props) {
   const { product } = props;
   return (
     <Card
@@ -28,39 +28,40 @@ export default function BasicCard(props) {
           {product.description}
         </Typography>
       </CardContent>
-      <CardActions sx={{ display: "flex", flexDirection: "column" }}>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
-            mb: 1.5,
-          }}
-        >
-          <Chip color="green" label={product.price} />
-          <Chip color="orange" label={product.category} />
-        </Box>
+      <CardActions>
+        <Box sx={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              mb: 1.5,
+            }}
+          >
+            <Chip color="green" label={product.price} />
+            <Chip color="orange" label={product.category} />
+          </Box>
 
-        {/*everything below has a left margin of 8 for some reason. and i can't remove it. */}
+          {/*everything below has a left margin of 8 for some reason. and i can't remove it. */}
 
-        <Button variant="contained" fullWidth sx={{ mb: 1.5 }} color="blue">
-          Add To Cart
-        </Button>
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            width: "100%",
-            m: 0,
-          }}
-        >
-          <Button variant="contained" color="indigo">
-            Edit
+          <Button variant="contained" fullWidth sx={{ mb: 1.5 }} color="blue">
+            Add To Cart
           </Button>
-          <Button variant="contained" color="red">
-            Delete
-          </Button>
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              width: "100%",
+              m: 0,
+            }}
+          >
+            <Button variant="contained" color="indigo">
+              Edit
+            </Button>
+            <Button variant="contained" color="red">
+              Delete
+            </Button>
+          </Box>
         </Box>
       </CardActions>
     </Card>
