@@ -28,7 +28,7 @@ export default function BasicCard(props) {
           {product.description}
         </Typography>
       </CardContent>
-      <CardActions sx={{ display: "flex", flexDirection: "column", m: 0 }}>
+      <CardActions sx={{ display: "flex", flexDirection: "column" }}>
         <Box
           sx={{
             display: "flex",

@@ -3,3 +3,11 @@
   box-sizing: border-box;
   font: "Mulish";
 }
+
+.MuiCardActions-root .MuiBox-root {
+  margin-left: 0 !important;
+}
+
+.MuiCardActions-root .MuiButtonBase-root {
+  margin-left: 0 !important;
+}
