@@ -1,7 +1,12 @@
+// R of CRUD
+export function GetCartItems() {
+  const cartInLocalStorage = localStorage.getItem("cart");
+  return cartInLocalStorage ? JSON.parse(cartInLocalStorage) : [];
+}
+
 // U of CRUD
 export function UpdateCart(id) {
-  const cartInLocalStorage = localStorage.getItem("cart");
-  const cart = cartInLocalStorage ? JSON.parse(cartInLocalStorage) : [];
+  const cart = GetCartItems();
 
   const updatedCart = cart.map((item) => {
     if (item._id === id) {
@@ -14,8 +19,7 @@ export function UpdateCart(id) {
 
 // C of CRUD
 export function AddToCart(id, name, description, price, category) {
-  const cartInLocalStorage = localStorage.getItem("cart");
-  const cart = cartInLocalStorage ? JSON.parse(cartInLocalStorage) : [];
+  const cart = GetCartItems();
 
   const updatedCart = [
     ...cart,
@@ -31,13 +35,9 @@ export function AddToCart(id, name, description, price, category) {
   localStorage.setItem("cart", JSON.stringify(updatedCart));
 }
 
-// // R of CRUD
-// export function GetCartItems() {}
-
 // D of CRUD
 export function RemoveFromCart(id) {
-  const cartInLocalStorage = localStorage.getItem("cart");
-  const cart = cartInLocalStorage ? JSON.parse(cartInLocalStorage) : [];
+  const cart = GetCartItems();
 
   const updatedCart = cart.filter((item) => item._id !== id);
   localStorage.setItem("cart", JSON.stringify(updatedCart));
