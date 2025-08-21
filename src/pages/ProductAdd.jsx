@@ -26,7 +26,7 @@ const ProductAdd = () => {
     // event.preventDefault();
     // 1. check for error
     if (!name || !price || !cat) {
-      toast.error("Please fill up the required fields!.");
+      toast.error("Please fill up the required fields!");
     }
 
     try {

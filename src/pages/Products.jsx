@@ -80,7 +80,12 @@ function Products() {
             <Grid container spacing={3}>
               {products.map((product) => (
                 <Grid size={{ sm: 12, md: 6, lg: 4 }} key={product._id}>
-                  <Product product={product}></Product>
+                  <Product
+                    product={product}
+                    filter={filter}
+                    page={page}
+                    setProducts={setProducts}
+                  ></Product>
                 </Grid>
               ))}
             </Grid>

@@ -6,9 +6,60 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
+import { Link } from "react-router";
+import Swal from "sweetalert2";
+import { getProducts, deleteProduct } from "../utils/api_products";
+import { AddToCart, UpdateCart } from "../utils/cart";
+import { toast } from "sonner";
+import { useState } from "react";
 
 export default function Product(props) {
-  const { product } = props;
+  const { product, filter, page, setProducts } = props;
+
+  const cartInLocalStorage = localStorage.getItem("cart");
+  const [cart, setCart] = useState(
+    cartInLocalStorage ? JSON.parse(cartInLocalStorage) : []
+  );
+
+  const handleProductDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1F81DF",
+      cancelButtonColor: "#FC4749",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await deleteProduct(id);
+        const updatedProducts = await getProducts(filter, page);
+        setProducts(updatedProducts);
+        toast.success("Product has been deleted.");
+      }
+    });
+  };
+
+  const handleAddToCart = () => {
+    const alreadyInCart = cart.find((item) => item._id === product._id);
+
+    if (alreadyInCart) {
+      // update cart item with quantity + 1
+      UpdateCart(product._id);
+    } else {
+      // add item to cart
+      AddToCart(
+        product._id,
+        product.name,
+        product.description,
+        product.price,
+        product.category
+      );
+    }
+    // console.log(JSON.parse(localStorage.getItem("cart")));
+    toast("Item successfully added to cart.");
+  };
+
   return (
     <Card
       sx={{
@@ -37,13 +88,19 @@ export default function Product(props) {
               mb: 1.5,
             }}
           >
-            <Chip color="green" label={product.price} />
+            <Chip color="green" label={"$" + product.price} />
             <Chip color="orange" label={product.category} />
           </Box>
 
           {/*everything below has a left margin of 8 for some reason. and i can't remove it. */}
 
-          <Button variant="contained" fullWidth sx={{ mb: 1.5 }} color="blue">
+          <Button
+            variant="contained"
+            fullWidth
+            sx={{ mb: 1.5 }}
+            color="blue"
+            onClick={handleAddToCart}
+          >
             Add To Cart
           </Button>
 
@@ -55,10 +112,21 @@ export default function Product(props) {
               m: 0,
             }}
           >
-            <Button variant="contained" color="indigo">
+            <Button
+              variant="contained"
+              color="indigo"
+              component={Link}
+              to={`/products/${product._id}/edit`}
+            >
               Edit
             </Button>
-            <Button variant="contained" color="red">
+            <Button
+              variant="contained"
+              color="red"
+              onClick={() => {
+                handleProductDelete(product._id);
+              }}
+            >
               Delete
             </Button>
           </Box>
