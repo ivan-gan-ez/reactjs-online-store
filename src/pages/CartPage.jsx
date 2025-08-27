@@ -6,20 +6,20 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
+import Box from "@mui/material/Box";
 
 import { getProducts } from "../utils/api_products";
-import { RemoveFromCart } from "../utils/cart";
+import { RemoveFromCart, GetCartItems } from "../utils/cart";
 
 import Header from "../components/Header";
 import { Button, Container, Typography } from "@mui/material";
 
+import { Link } from "react-router";
 import { useState } from "react";
 
 const CartPage = () => {
   const cartInLocalStorage = localStorage.getItem("cart");
-  const [cart, setCart] = useState(
-    cartInLocalStorage ? JSON.parse(cartInLocalStorage) : []
-  );
+  const [cart, setCart] = useState(GetCartItems());
 
   const itemTotals = cart.map((item) => item.quantity * item.price);
 
@@ -38,12 +38,7 @@ const CartPage = () => {
   if (cart.length === 0) {
     return (
       <Container sx={{ p: 6 }}>
-        <Header />
-        <Container maxWidth="md">
-          <Typography variant="h3" align="center" my={3}>
-            Your Cart
-          </Typography>
-        </Container>
+        <Header current="cart" title="Your cart" />
 
         <TableContainer component={Paper}>
           <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -58,9 +53,9 @@ const CartPage = () => {
             </TableHead>
             <TableBody>
               <TableRow>
-                <Typography sx={{ p: 3 }}>
-                  Your cart is currently empty.
-                </Typography>
+                <TableCell>
+                  <Typography>Your cart is currently empty.</Typography>
+                </TableCell>
               </TableRow>
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
@@ -82,13 +77,7 @@ const CartPage = () => {
 
   return (
     <Container sx={{ p: 6 }}>
-      <Header />
-      <Container maxWidth="md">
-        <Typography variant="h3" align="center" my={3}>
-          Your Cart
-        </Typography>
-      </Container>
-
+      <Header current="cart" title="Your cart" />
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -128,17 +117,24 @@ const CartPage = () => {
             <TableRow
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
-              <TableCell component="th" scope="row"></TableCell>
-              <TableCell align="right"></TableCell>
-              <TableCell align="right"></TableCell>
-              <TableCell align="right">
+              <TableCell colSpan={4} align="right">
                 <Typography fontWeight={600}>${total.toFixed(2)}</Typography>
               </TableCell>
-              <TableCell align="right"></TableCell>
             </TableRow>
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ pt: 3, display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          variant="contained"
+          color="indigo"
+          component={Link}
+          to="/checkout"
+          disabled={cart.length === 0 ? true : false}
+        >
+          Checkout
+        </Button>
+      </Box>
     </Container>
   );
 };

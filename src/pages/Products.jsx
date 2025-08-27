@@ -34,7 +34,7 @@ function Products() {
           p: 6,
         }}
       >
-        <Header />
+        <Header current="home" />
         <Box sx={{ px: 12, mt: 4 }}>
           <Box
             sx={{

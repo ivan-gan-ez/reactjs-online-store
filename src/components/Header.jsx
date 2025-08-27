@@ -10,7 +10,8 @@ import {
 import { Link } from "react-router";
 import { useState } from "react";
 
-export default function Header() {
+export default function Header(props) {
+  const { current, title = "Welcome to PQRS III" } = props;
   return (
     <Box sx={{ py: 2 }}>
       <Typography
@@ -19,21 +20,35 @@ export default function Header() {
         fontWeight="600"
         sx={{ pb: 3 }}
       >
-        Welcome To PQRS III
+        {title}
       </Typography>
 
       <Container sx={{ width: "100%", textAlign: "center", p: 3 }}>
         <Button
           component={Link}
           to="/"
-          variant="outlined"
+          variant={current === "home" ? "contained" : "outlined"}
           color="blue"
           sx={{ mr: 2 }}
         >
           Home
         </Button>
-        <Button component={Link} to="/cart" variant="contained" color="blue">
+        <Button
+          component={Link}
+          to="/cart"
+          variant={current === "cart" ? "contained" : "outlined"}
+          color="blue"
+          sx={{ mr: 2 }}
+        >
           Cart
+        </Button>
+        <Button
+          component={Link}
+          to="/orders"
+          variant={current === "orders" ? "contained" : "outlined"}
+          color="blue"
+        >
+          My Orders
         </Button>
       </Container>
       <Divider />

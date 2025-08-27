@@ -9,7 +9,7 @@ import Chip from "@mui/material/Chip";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
 import { getProducts, deleteProduct } from "../utils/api_products";
-import { AddToCart, UpdateCart } from "../utils/cart";
+import { AddToCart, UpdateCart, GetCartItems } from "../utils/cart";
 import { toast } from "sonner";
 import { useState } from "react";
 
@@ -17,9 +17,7 @@ export default function Product(props) {
   const { product, filter, page, setProducts } = props;
 
   const cartInLocalStorage = localStorage.getItem("cart");
-  const [cart, setCart] = useState(
-    cartInLocalStorage ? JSON.parse(cartInLocalStorage) : []
-  );
+  const [cart, setCart] = useState(GetCartItems());
 
   const handleProductDelete = async (id) => {
     Swal.fire({
@@ -41,6 +39,7 @@ export default function Product(props) {
   };
 
   const handleAddToCart = () => {
+    console.log(GetCartItems());
     const alreadyInCart = cart.find((item) => item._id === product._id);
 
     if (alreadyInCart) {
@@ -57,6 +56,7 @@ export default function Product(props) {
       );
     }
     // console.log(JSON.parse(localStorage.getItem("cart")));
+    setCart(GetCartItems());
     toast("Item successfully added to cart.");
   };
 
