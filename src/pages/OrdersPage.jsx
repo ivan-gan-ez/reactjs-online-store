@@ -113,7 +113,7 @@ const OrdersPage = () => {
                     </FormControl>
                   </TableCell>
                   <TableCell align="left">
-                    {order.paid_at ? order.paid_at : ""}
+                    {order.paid_at ? order.paid_at : null}
                   </TableCell>
                   <TableCell align="right">
                     {order.status === "pending" ? (
