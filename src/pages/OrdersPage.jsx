@@ -14,6 +14,8 @@ import {
   Select,
   MenuItem,
   Button,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { deleteOrder, getOrders, updateOrder } from "../utils/api_orders";
@@ -23,6 +25,7 @@ import { toast } from "sonner";
 const OrdersPage = () => {
   // get orders from API
   const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // call the API
   useEffect(() => {
@@ -35,7 +38,13 @@ const OrdersPage = () => {
       });
   }, []); // call only once when page loads
 
-  console.log(orders);
+  const handleOrderUpdate = async (id, status) => {
+    setLoading(true);
+    await updateOrder(id, status);
+    const updatedOrders = await getOrders();
+    setOrders(updatedOrders);
+    setLoading(false);
+  };
 
   const handleOrderDelete = async (id) => {
     Swal.fire({
@@ -48,10 +57,12 @@ const OrdersPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
+        setLoading(true);
         await deleteOrder(id);
         const updatedOrders = await getOrders();
         setOrders(updatedOrders);
         toast.success("Order has been deleted.");
+        setLoading(false);
       }
     });
   };
@@ -60,79 +71,90 @@ const OrdersPage = () => {
     <Container sx={{ p: 6 }}>
       <Header current="orders" title="My Orders" />
       <Container maxWidth="lg">
-        <TableContainer component={Paper} sx={{ mt: 4 }}>
-          <Table sx={{ minWidth: 650 }} aria-label="simple table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Customer</TableCell>
-                <TableCell align="left">Products</TableCell>
-                <TableCell align="left">Total Amount</TableCell>
-                <TableCell align="left">Status</TableCell>
-                <TableCell align="left">Payment Date</TableCell>
-                <TableCell align="right">Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {orders.map((order) => (
-                <TableRow
-                  key={order._id}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell component="th" scope="row">
-                    {order.customerName}
-                    <br /> {order.customerEmail}
-                  </TableCell>
-                  <TableCell align="left">
-                    {order.products.map((product) => (
-                      <Box key={product._id}>{product.name}</Box>
-                    ))}
-                  </TableCell>
-                  <TableCell align="left">
-                    {order.totalPrice.toFixed(2)}
-                  </TableCell>
-                  <TableCell align="left">
-                    <FormControl fullWidth>
-                      <InputLabel id="demo-simple-select-label">
-                        Status
-                      </InputLabel>
-                      <Select
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        defaultValue={order.status}
-                        label="Status"
-                        disabled={order.status === "pending" ? true : false}
-                        onChange={(e) => updateOrder(order._id, e.target.value)}
-                      >
-                        <MenuItem value={"pending"} disabled>
-                          Pending
-                        </MenuItem>
-                        <MenuItem value={"paid"}>Paid</MenuItem>
-                        <MenuItem value={"failed"}>Failed</MenuItem>
-                        <MenuItem value={"completed"}>Completed</MenuItem>
-                      </Select>
-                    </FormControl>
-                  </TableCell>
-                  <TableCell align="left">
-                    {order.paid_at ? order.paid_at : null}
-                  </TableCell>
-                  <TableCell align="right">
-                    {order.status === "pending" ? (
-                      <Button
-                        color="error"
-                        variant="outlined"
-                        onClick={() => handleOrderDelete(order._id)}
-                      >
-                        Delete
-                      </Button>
-                    ) : (
-                      ""
-                    )}
-                  </TableCell>
+        {loading ? (
+          <Backdrop
+            sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+            open={loading}
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
+        ) : (
+          <TableContainer component={Paper} sx={{ mt: 4 }}>
+            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Customer</TableCell>
+                  <TableCell align="left">Products</TableCell>
+                  <TableCell align="left">Total Amount</TableCell>
+                  <TableCell align="left">Status</TableCell>
+                  <TableCell align="left">Payment Date</TableCell>
+                  <TableCell align="right">Actions</TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {orders.map((order) => (
+                  <TableRow
+                    key={order._id}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      {order.customerName}
+                      <br /> {order.customerEmail}
+                    </TableCell>
+                    <TableCell align="left">
+                      {order.products.map((product) => (
+                        <Box key={product._id}>{product.name}</Box>
+                      ))}
+                    </TableCell>
+                    <TableCell align="left">
+                      {order.totalPrice.toFixed(2)}
+                    </TableCell>
+                    <TableCell align="left">
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">
+                          Status
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          defaultValue={order.status}
+                          label="Status"
+                          disabled={order.status === "pending" ? true : false}
+                          onChange={(e) =>
+                            handleOrderUpdate(order._id, e.target.value)
+                          }
+                        >
+                          <MenuItem value={"pending"} disabled>
+                            Pending
+                          </MenuItem>
+                          <MenuItem value={"paid"}>Paid</MenuItem>
+                          <MenuItem value={"failed"}>Failed</MenuItem>
+                          <MenuItem value={"completed"}>Completed</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell align="left">
+                      {order.paid_at ? order.paid_at : null}
+                    </TableCell>
+                    <TableCell align="right">
+                      {order.status === "pending" ? (
+                        <Button
+                          color="error"
+                          variant="outlined"
+                          onClick={() => handleOrderDelete(order._id)}
+                        >
+                          Delete
+                        </Button>
+                      ) : (
+                        ""
+                      )}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </Container>
     </Container>
   );

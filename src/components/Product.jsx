@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
+import { CardMedia } from "@mui/material";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/material/Chip";
@@ -12,6 +13,7 @@ import { getProducts, deleteProduct } from "../utils/api_products";
 import { AddToCart, UpdateCart, GetCartItems } from "../utils/cart";
 import { toast } from "sonner";
 import { useState } from "react";
+import { API_URL } from "../utils/constants";
 
 export default function Product(props) {
   const { product, filter, page, setProducts } = props;
@@ -71,6 +73,15 @@ export default function Product(props) {
         justifyContent: "space-between",
       }}
     >
+      <CardMedia
+        component="img"
+        height="200"
+        image={
+          product.image
+            ? API_URL + product.image
+            : API_URL + "uploads/placeholder_image.png"
+        }
+      />
       <CardContent>
         <Typography variant="h6" fontWeight="600" sx={{ mb: 1 }}>
           {product.name}

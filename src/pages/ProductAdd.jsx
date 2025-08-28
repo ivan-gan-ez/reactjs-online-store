@@ -9,18 +9,37 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
+
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useState, useEffect } from "react";
 import { addProduct } from "../utils/api_products";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { uploadImage } from "../utils/api_image";
+import { API_URL } from "../utils/constants";
 
 const ProductAdd = () => {
+  const VisuallyHiddenInput = styled("input")({
+    clip: "rect(0 0 0 0)",
+    clipPath: "inset(50%)",
+    height: 1,
+    overflow: "hidden",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    whiteSpace: "nowrap",
+    width: 1,
+  });
+
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState(0);
   const [cat, setCat] = useState("");
+  const [image, setImage] = useState(null);
 
   const handleFormSubmit = async (event) => {
     // event.preventDefault();
@@ -31,7 +50,7 @@ const ProductAdd = () => {
 
     try {
       // 2. trigger API to create new product
-      await addProduct(name, desc, price, cat);
+      await addProduct(name, desc, price, cat, image);
 
       // 3. if successful, redirect back to home page and send success message
       toast.success("Product successfully added!");
@@ -106,6 +125,41 @@ const ProductAdd = () => {
                 <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
               </Select>
             </FormControl>
+          </Box>
+          <Box my={2}>
+            {image ? (
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <img src={API_URL + image} width="200px" />
+                <Button
+                  color="red"
+                  variant="contained"
+                  size="small"
+                  onClick={() => setImage(null)}
+                  sx={{ ml: 1.5 }}
+                >
+                  Remove image
+                </Button>
+              </Box>
+            ) : (
+              <Button
+                component="label"
+                role={undefined}
+                variant="contained"
+                tabIndex={-1}
+                startIcon={<CloudUploadIcon />}
+              >
+                Upload files
+                <VisuallyHiddenInput
+                  type="file"
+                  onChange={async (event) => {
+                    const data = await uploadImage(event.target.files[0]);
+                    // { image_url: "uploads/image.png" }
+                    setImage(data.image_url);
+                  }}
+                  accept="image/*"
+                />
+              </Button>
+            )}
           </Box>
           <Button
             variant="contained"
