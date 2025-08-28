@@ -53,7 +53,7 @@ const CartPage = () => {
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>
+                <TableCell colSpan={5}>
                   <Typography>Your cart is currently empty.</Typography>
                 </TableCell>
               </TableRow>

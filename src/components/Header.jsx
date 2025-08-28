@@ -44,6 +44,15 @@ export default function Header(props) {
         </Button>
         <Button
           component={Link}
+          to="/categories"
+          variant={current === "categories" ? "contained" : "outlined"}
+          color="blue"
+          sx={{ mr: 2 }}
+        >
+          Categories
+        </Button>
+        <Button
+          component={Link}
           to="/orders"
           variant={current === "orders" ? "contained" : "outlined"}
           color="blue"

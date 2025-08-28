@@ -7,6 +7,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import PaymentVerify from "./pages/PaymentVerify";
 import { Toaster } from "sonner";
 import OrdersPage from "./pages/OrdersPage";
+import CategoriesPage from "./pages/CategoriesPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/checkout" element={<CheckoutPage />}></Route>
           <Route path="/verify-payment" element={<PaymentVerify />}></Route>
           <Route path="/orders" element={<OrdersPage />}></Route>
+          <Route path="/categories" element={<CategoriesPage />}></Route>
         </Routes>
         <Toaster position="top-right" />
       </BrowserRouter>

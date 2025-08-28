@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { uploadImage } from "../utils/api_image";
 import { API_URL } from "../utils/constants";
+import { getCategories } from "../utils/api_categories";
 
 const ProductAdd = () => {
   const VisuallyHiddenInput = styled("input")({
@@ -40,6 +41,18 @@ const ProductAdd = () => {
   const [price, setPrice] = useState(0);
   const [cat, setCat] = useState("");
   const [image, setImage] = useState(null);
+  const [categories, setCategories] = useState([]);
+
+  // call the API
+  useEffect(() => {
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []); // call only once when page loads
 
   const handleFormSubmit = async (event) => {
     // event.preventDefault();
@@ -119,10 +132,9 @@ const ProductAdd = () => {
                   setCat(event.target.value);
                 }}
               >
-                <MenuItem value={"Games"}>Games</MenuItem>
-                <MenuItem value={"Consoles"}>Consoles</MenuItem>
-                <MenuItem value={"Accessories"}>Accessories</MenuItem>
-                <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem value={cat._id}>{cat.label}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>

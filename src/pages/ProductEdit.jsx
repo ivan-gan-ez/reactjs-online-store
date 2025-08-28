@@ -21,6 +21,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { addProduct } from "../utils/api_products";
 import { uploadImage } from "../utils/api_image";
 import { API_URL } from "../utils/constants";
+import { getCategories } from "../utils/api_categories";
 
 const ProductEdit = () => {
   const VisuallyHiddenInput = styled("input")({
@@ -42,6 +43,7 @@ const ProductEdit = () => {
   const [cat, setCat] = useState("");
   const [error, setError] = useState(null);
   const [image, setImage] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   // load product from backend API and assign it to the useStates
   const { id } = useParams();
@@ -66,6 +68,17 @@ const ProductEdit = () => {
         setError("Product not found.");
       });
   }, [id]);
+
+  // call the API
+  useEffect(() => {
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []); // call only once when page loads
 
   const handleFormSubmit = async (event) => {
     // event.preventDefault();
@@ -169,10 +182,9 @@ const ProductEdit = () => {
                   setCat(event.target.value);
                 }}
               >
-                <MenuItem value={"Games"}>Games</MenuItem>
-                <MenuItem value={"Consoles"}>Consoles</MenuItem>
-                <MenuItem value={"Accessories"}>Accessories</MenuItem>
-                <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
+                {categories.map((cat) => (
+                  <MenuItem value={cat._id}>{cat.label}</MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Box>

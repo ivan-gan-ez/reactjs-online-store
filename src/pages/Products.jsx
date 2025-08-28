@@ -15,17 +15,30 @@ import Header from "../components/Header";
 
 import Product from "../components/Product";
 import { getProducts } from "../utils/api_products";
+import { getCategories } from "../utils/api_categories";
 
 function Products() {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     getProducts(filter, page).then((data) => {
       setProducts(data);
     });
   }, [filter, page]);
+
+  // call the API
+  useEffect(() => {
+    getCategories()
+      .then((data) => {
+        setCategories(data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []); // call only once when page loads
 
   return (
     <>
@@ -69,10 +82,9 @@ function Products() {
               }}
             >
               <MenuItem value={"all"}>All Categories</MenuItem>
-              <MenuItem value={"Games"}>Games</MenuItem>
-              <MenuItem value={"Consoles"}>Consoles</MenuItem>
-              <MenuItem value={"Accessories"}>Accessories</MenuItem>
-              <MenuItem value={"Subscriptions"}>Subscriptions</MenuItem>
+              {categories.map((cat) => (
+                <MenuItem value={cat._id}>{cat.label}</MenuItem>
+              ))}
             </Select>
           </FormControl>
 

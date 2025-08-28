@@ -100,7 +100,10 @@ export default function Product(props) {
             }}
           >
             <Chip color="green" label={"$" + product.price} />
-            <Chip color="orange" label={product.category} />
+            <Chip
+              color="orange"
+              label={product.category.label ? product.category.label : ""}
+            />
           </Box>
 
           {/*everything below has a left margin of 8 for some reason. and i can't remove it. */}
