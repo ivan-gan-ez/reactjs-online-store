@@ -56,8 +56,26 @@ export default function Header(props) {
           to="/orders"
           variant={current === "orders" ? "contained" : "outlined"}
           color="blue"
+          sx={{ mr: 2 }}
         >
           My Orders
+        </Button>
+        <Button
+          component={Link}
+          to="/login"
+          variant={current === "login" ? "contained" : "outlined"}
+          color="blue"
+          sx={{ mr: 2 }}
+        >
+          Log In
+        </Button>
+        <Button
+          component={Link}
+          to="/signup"
+          variant={current === "signup" ? "contained" : "outlined"}
+          color="blue"
+        >
+          Sign Up
         </Button>
       </Container>
       <Divider />

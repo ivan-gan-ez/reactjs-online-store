@@ -8,6 +8,8 @@ import PaymentVerify from "./pages/PaymentVerify";
 import { Toaster } from "sonner";
 import OrdersPage from "./pages/OrdersPage";
 import CategoriesPage from "./pages/CategoriesPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
           <Route path="/verify-payment" element={<PaymentVerify />}></Route>
           <Route path="/orders" element={<OrdersPage />}></Route>
           <Route path="/categories" element={<CategoriesPage />}></Route>
+          <Route path="/login" element={<LoginPage />}></Route>
+          <Route path="/signup" element={<SignupPage />}></Route>
         </Routes>
         <Toaster position="top-right" />
       </BrowserRouter>
