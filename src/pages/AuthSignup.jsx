@@ -4,27 +4,33 @@ import { useState } from "react";
 import validator from "email-validator";
 import { userSignup } from "../utils/api_user";
 import { toast } from "sonner";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router";
 
 const SignupPage = () => {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
 
   const handleSignUp = async () => {
-    if (!name || !email || !password) {
-      toast.error("Please fill in all fields.");
-    } else if (!validator.validate(email)) {
-      toast.error("Please use a valid email address.");
-    } else {
-      //do checkout
-      try {
-        //create order
+    try {
+      if (!name || !email || !password || !confirmPassword) {
+        toast.error("Please fill in all fields.");
+      } else if (!validator.validate(email)) {
+        toast.error("Please use a valid email address.");
+      } else if (password !== confirmPassword) {
+        toast.error("Your passwords do not match.");
+      } else {
         const response = await userSignup(name, email, password);
-        //get billplz url
-        console.log(response);
-      } catch (error) {
-        toast.error(error.response.data.message);
+        setCookie("currentuser", response, { maxAge: 60 * 60 * 8 });
+        toast.success("Signup successful!");
+        navigate("/");
       }
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 
@@ -60,6 +66,16 @@ const SignupPage = () => {
               fullWidth
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              sx={{ mb: 2 }}
+            />
+            <TextField
+              id="outlined-basic"
+              label="Confirm Password"
+              variant="outlined"
+              type="password"
+              fullWidth
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               sx={{ mb: 2 }}
             />
             <Button

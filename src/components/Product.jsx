@@ -14,12 +14,17 @@ import { AddToCart, UpdateCart, GetCartItems } from "../utils/cart";
 import { toast } from "sonner";
 import { useState } from "react";
 import { API_URL } from "../utils/constants";
+import { useCookies } from "react-cookie";
 
 export default function Product(props) {
   const { product, filter, page, setProducts } = props;
 
   const cartInLocalStorage = localStorage.getItem("cart");
   const [cart, setCart] = useState(GetCartItems());
+
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies;
+  const { token = "" } = currentuser;
 
   const handleProductDelete = async (id) => {
     Swal.fire({
@@ -32,10 +37,15 @@ export default function Product(props) {
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        await deleteProduct(id);
-        const updatedProducts = await getProducts(filter, page);
-        setProducts(updatedProducts);
-        toast.success("Product has been deleted.");
+        try {
+          await deleteProduct(id, token);
+          const updatedProducts = await getProducts(filter, page);
+          setProducts(updatedProducts);
+          toast.success("Product has been deleted.");
+        } catch (error) {
+          console.log(error);
+          toast.error(error.response.data.error);
+        }
       }
     });
   };
@@ -118,32 +128,34 @@ export default function Product(props) {
             Add To Cart
           </Button>
 
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              width: "100%",
-              m: 0,
-            }}
-          >
-            <Button
-              variant="contained"
-              color="indigo"
-              component={Link}
-              to={`/products/${product._id}/edit`}
-            >
-              Edit
-            </Button>
-            <Button
-              variant="contained"
-              color="red"
-              onClick={() => {
-                handleProductDelete(product._id);
+          {currentuser.role === "admin" && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                width: "100%",
+                m: 0,
               }}
             >
-              Delete
-            </Button>
-          </Box>
+              <Button
+                variant="contained"
+                color="indigo"
+                component={Link}
+                to={`/products/${product._id}/edit`}
+              >
+                Edit
+              </Button>
+              <Button
+                variant="contained"
+                color="red"
+                onClick={() => {
+                  handleProductDelete(product._id);
+                }}
+              >
+                Delete
+              </Button>
+            </Box>
+          )}
         </Box>
       </CardActions>
     </Card>

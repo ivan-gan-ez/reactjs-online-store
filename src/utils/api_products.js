@@ -17,14 +17,29 @@ export async function getProduct(id) {
   return response.data;
 }
 
-export async function addProduct(name, description, price, category, image) {
-  const response = await axios.post(API_URL + "products", {
-    name,
-    description,
-    price,
-    category,
-    image,
-  });
+export async function addProduct(
+  name,
+  description,
+  price,
+  category,
+  image,
+  token
+) {
+  const response = await axios.post(
+    API_URL + "products",
+    {
+      name,
+      description,
+      price,
+      category,
+      image,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 }
 
@@ -34,19 +49,32 @@ export async function updateProduct(
   description,
   price,
   category,
-  image
+  image,
+  token
 ) {
-  const response = await axios.put(API_URL + "products/" + id, {
-    name,
-    description,
-    price,
-    category,
-    image,
-  });
+  const response = await axios.put(
+    API_URL + "products/" + id,
+    {
+      name,
+      description,
+      price,
+      category,
+      image,
+    },
+    {
+      headers: {
+        Authorization: "Bearer " + token,
+      },
+    }
+  );
   return response.data;
 }
 
-export async function deleteProduct(id) {
-  const response = await axios.delete(API_URL + "products/" + id);
+export async function deleteProduct(id, token) {
+  const response = await axios.delete(API_URL + "products/" + id, {
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  });
   return response.data;
 }

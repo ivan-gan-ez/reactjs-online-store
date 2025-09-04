@@ -22,6 +22,7 @@ import { addProduct } from "../utils/api_products";
 import { uploadImage } from "../utils/api_image";
 import { API_URL } from "../utils/constants";
 import { getCategories } from "../utils/api_categories";
+import { useCookies } from "react-cookie";
 
 const ProductEdit = () => {
   const VisuallyHiddenInput = styled("input")({
@@ -44,6 +45,10 @@ const ProductEdit = () => {
   const [error, setError] = useState(null);
   const [image, setImage] = useState(null);
   const [categories, setCategories] = useState([]);
+
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies; // assign empty object if user is not logged in to avoid error
+  const { token = "" } = currentuser; // assign empty string if user is not logged in to avoid error
 
   // load product from backend API and assign it to the useStates
   const { id } = useParams();
@@ -89,13 +94,14 @@ const ProductEdit = () => {
 
     try {
       // 2. trigger API to update the product
-      await updateProduct(id, name, desc, price, cat, image);
+      await updateProduct(id, name, desc, price, cat, image, token);
 
       // 3. if successful, redirect back to home page and send success message
       toast.success("Product successfully edited!");
       navigate("/");
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.error);
     }
   };
 

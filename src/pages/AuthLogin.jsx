@@ -4,26 +4,29 @@ import { useState } from "react";
 import validator from "email-validator";
 import { userLogin } from "../utils/api_user";
 import { toast } from "sonner";
+import { useCookies } from "react-cookie";
+import { useNavigate } from "react-router";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies(["currentuser"]);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      toast.error("Please fill in all fields.");
-    } else if (!validator.validate(email)) {
-      toast.error("Please use a valid email address.");
-    } else {
-      //do checkout
-      try {
-        //create order
+    try {
+      if (!email || !password) {
+        toast.error("Please fill in all fields.");
+      } else if (!validator.validate(email)) {
+        toast.error("Please use a valid email address.");
+      } else {
         const response = await userLogin(email, password);
-        //get billplz url
-        console.log(response);
-      } catch (error) {
-        toast.error(error.response.data.message);
+        setCookie("currentuser", response, { maxAge: 60 * 60 * 8 });
+        toast.success("Login successful!");
+        navigate("/");
       }
+    } catch (error) {
+      toast.error(error.response.data.message);
     }
   };
 

@@ -22,12 +22,18 @@ import { createOrder } from "../utils/api_orders";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 
+import { useCookies } from "react-cookie";
+
 const CheckoutPage = () => {
   const cartInLocalStorage = localStorage.getItem("cart");
   const [cart, setCart] = useState(GetCartItems());
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  // const [name, setName] = useState("");
+  // const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies; // assign empty object to avoid error if user not logged in
+  const { token = "", name = "", email = "" } = currentuser;
 
   const itemTotals = cart.map((item) => item.quantity * item.price);
 
@@ -76,8 +82,9 @@ const CheckoutPage = () => {
                 label="Name"
                 variant="outlined"
                 fullWidth
+                disabled
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                // onChange={(e) => setName(e.target.value)}
               />
             </Box>
             <Box mb={2}>
@@ -85,8 +92,9 @@ const CheckoutPage = () => {
                 label="Email"
                 variant="outlined"
                 fullWidth
+                disabled
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                // onChange={(e) => setEmail(e.target.value)}
               />
             </Box>
             <Button fullWidth variant="contained" onClick={handleCheckout}>

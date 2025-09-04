@@ -21,28 +21,34 @@ import { useState, useEffect } from "react";
 import { deleteOrder, getOrders, updateOrder } from "../utils/api_orders";
 import Swal from "sweetalert2";
 import { toast } from "sonner";
+import { useCookies } from "react-cookie";
 
 const OrdersPage = () => {
   // get orders from API
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies; // assign empty object to avoid error if user not logged in
+  const { token = "" } = currentuser;
+
   // call the API
   useEffect(() => {
-    getOrders()
+    getOrders(token)
       .then((data) => {
         setOrders(data);
       })
       .catch((error) => {
         console.log(error);
       });
-  }, []); // call only once when page loads
+  }, [token]); // call only once when the page load
 
   const handleOrderUpdate = async (id, status) => {
     setLoading(true);
-    await updateOrder(id, status);
-    const updatedOrders = await getOrders();
+    await updateOrder(id, status, token);
+    const updatedOrders = await getOrders(token);
     setOrders(updatedOrders);
+    toast.info("Status updated!");
     setLoading(false);
   };
 
@@ -58,10 +64,14 @@ const OrdersPage = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         setLoading(true);
-        await deleteOrder(id);
-        const updatedOrders = await getOrders();
-        setOrders(updatedOrders);
-        toast.success("Order has been deleted.");
+        try {
+          await deleteOrder(id, token);
+          const updatedOrders = await getOrders(token);
+          setOrders(updatedOrders);
+          toast.success("Order has been deleted.");
+        } catch (error) {
+          toast.error(error.response.data.error);
+        }
         setLoading(false);
       }
     });
@@ -119,7 +129,10 @@ const OrdersPage = () => {
                           id="demo-simple-select"
                           defaultValue={order.status}
                           label="Status"
-                          disabled={order.status === "pending" ? true : false}
+                          disabled={
+                            order.status === "pending" ||
+                            currentuser.role === "user"
+                          }
                           onChange={(e) =>
                             handleOrderUpdate(order._id, e.target.value)
                           }
@@ -137,17 +150,18 @@ const OrdersPage = () => {
                       {order.paid_at ? order.paid_at : null}
                     </TableCell>
                     <TableCell align="right">
-                      {order.status === "pending" ? (
+                      {order.status === "pending" &&
+                      currentuser.role === "admin" ? (
                         <Button
+                          variant="contained"
                           color="error"
-                          variant="outlined"
-                          onClick={() => handleOrderDelete(order._id)}
+                          onClick={() => {
+                            handleOrderDelete(order._id);
+                          }}
                         >
                           Delete
                         </Button>
-                      ) : (
-                        ""
-                      )}
+                      ) : null}
                     </TableCell>
                   </TableRow>
                 ))}

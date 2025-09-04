@@ -17,11 +17,17 @@ import Product from "../components/Product";
 import { getProducts } from "../utils/api_products";
 import { getCategories } from "../utils/api_categories";
 
+import { useCookies } from "react-cookie";
+
 function Products() {
   const [filter, setFilter] = useState("all");
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
+
+  const [cookies] = useCookies(["currentuser"]);
+  const { currentuser = {} } = cookies; // assign empty object if user is not logged in to avoid error
+  const { token = "" } = currentuser; // assign empty string if user is not logged in to avoid error
 
   useEffect(() => {
     getProducts(filter, page).then((data) => {
@@ -59,14 +65,16 @@ function Products() {
             <Typography variant="h5" fontWeight="600">
               Products
             </Typography>
-            <Button
-              component={Link}
-              to="/products/new"
-              variant="contained"
-              color="green"
-            >
-              Add New
-            </Button>
+            {currentuser.role === "admin" && (
+              <Button
+                component={Link}
+                to="/products/new"
+                variant="contained"
+                color="green"
+              >
+                Add New
+              </Button>
+            )}
           </Box>
 
           <FormControl sx={{ minWidth: "200px", my: 3 }}>
